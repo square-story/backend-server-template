@@ -1,10 +1,13 @@
 # Development files
 node_modules/
 dist/
+build/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Environment files
 .env*
@@ -16,10 +19,19 @@ yarn-error.log*
 *.swp
 *.swo
 *~
+.sublime-project
+.sublime-workspace
 
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 
 # Git
 .git/
@@ -27,27 +39,145 @@ Thumbs.db
 
 # Build artifacts
 *.tsbuildinfo
+.cache/
+.parcel-cache/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
 
 # Test files
 coverage/
 .nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+*.lcov
 
 # Temporary files
 tmp/
-temp/ 
+temp/
+.tmp/
 
-#scripts
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.npm
+.yarn-integrity
+
+# Development scripts
 scripts/
+setup-template.sh
 
-#DEPLOYMENT_GUIDE.md
+# Documentation files (keep only essential ones)
 DEPLOYMENT_GUIDE.md
-
-#README.md
-README.md
-
-#LICENSE
-LICENSE
-
-#QUICK_FIX.md
 QUICK_FIX.md
+NPM_PACKAGE_README.md
+NPM_PACKAGE_SUMMARY.md
+template-setup.md
+TEMPLATE_USAGE.md
+
+# Source maps and development files
+*.map
+*.d.ts.map
+
+# TypeScript source files (only include compiled JS)
+src/**/*.ts
+!src/**/*.d.ts
+
+# Development dependencies
+@types/
+
+# ESLint and other linting configs
+.eslintrc*
+.prettierrc*
+.stylelintrc*
+lint-staged.config.js
+
+# Jest and testing configs
+jest.config.js
+jest.setup.js
+test/
+tests/
+__tests__/
+
+# Webpack and bundler configs
+webpack.config.js
+rollup.config.js
+vite.config.js
+parcel.config.js
+
+# Babel configs
+.babelrc*
+babel.config.js
+
+# PostCSS configs
+postcss.config.js
+tailwind.config.js
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+azure-pipelines.yml
+
+# Monitoring and logging
+.pm2/
+ecosystem.config.js
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.csr
+
+# Backup and archive files
+*.bak
+*.backup
+*.old
+*.zip
+*.tar.gz
+*.rar
+
+# Local development
+.local/
+.localhost/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+
+# Gatsby files
+docs/build/
+docs/.doctrees/
 

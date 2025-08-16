@@ -10,10 +10,19 @@
     "dev": "NODE_ENV=development nodemon",
     "start": "NODE_ENV=production node dist",
     "build": "tsc && tsc-alias",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build && npm run test",
     "test": "node scripts/test-package.js",
+    "test:verbose": "node scripts/test-package.js --verbose",
+    "test:quick": "node scripts/test-package.js --quick",
     "publish:package": "./scripts/publish.sh",
-    "postinstall": "chmod +x generate-project.js"
+    "publish:dry-run": "npm pack && echo 'Package created successfully' && rm -f *.tgz",
+    "postinstall": "chmod +x generate-project.js",
+    "lint": "echo 'No linting configured. Consider adding ESLint.'",
+    "lint:fix": "echo 'No linting configured. Consider adding ESLint.'",
+    "format": "echo 'No formatting configured. Consider adding Prettier.'",
+    "clean": "rm -rf dist coverage .nyc_output *.tgz",
+    "prebuild": "npm run clean",
+    "postbuild": "echo 'Build completed successfully!'"
   },
   "keywords": [
     "template",
