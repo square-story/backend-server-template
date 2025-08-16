@@ -64,13 +64,7 @@ function validateEmail(email) {
     return null;
 }
 
-function showProgress(message, current, total) {
-    const percentage = Math.round((current / total) * 100);
-    const barLength = 30;
-    const filledLength = Math.round((barLength * current) / total);
-    const bar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
-    process.stdout.write(`\r${message} [${bar}] ${percentage}% (${current}/${total})`);
-}
+
 
 function showSpinner(message, interval = 100) {
     const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
