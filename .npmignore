@@ -35,3 +35,19 @@ coverage/
 # Temporary files
 tmp/
 temp/ 
+
+#scripts
+scripts/
+
+#DEPLOYMENT_GUIDE.md
+DEPLOYMENT_GUIDE.md
+
+#README.md
+README.md
+
+#LICENSE
+LICENSE
+
+#QUICK_FIX.md
+QUICK_FIX.md
+
