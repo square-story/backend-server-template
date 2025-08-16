@@ -93,7 +93,7 @@ async function generateProject() {
         console.log('📝 Project Configuration');
         console.log('------------------------');
 
-        const projectName = await question('Enter project name');
+        const projectName = await question('Enter project name: ');
         if (!projectName) {
             console.log('❌ Project name is required!');
             process.exit(1);
@@ -115,9 +115,9 @@ async function generateProject() {
             process.exit(1);
         }
 
-        const projectDescription = await question('Enter project description', 'A production-ready Node.js backend server');
-        const authorName = await question('Enter author name', 'Your Name');
-        const authorEmail = await question('Enter author email (optional)');
+        const projectDescription = await question('Enter project description: ', 'A production-ready Node.js backend server');
+        const authorName = await question('Enter author name: ', 'Your Name');
+        const authorEmail = await question('Enter author email (optional): ');
 
         // Validate email if provided
         const emailError = validateEmail(authorEmail);
@@ -140,11 +140,20 @@ async function generateProject() {
         console.log('\n🔧 Additional Configuration');
         console.log('---------------------------');
 
-        const useDocker = (await question('Add Docker support? (y/N)')).toLowerCase() === 'y';
-        const useGitHooks = (await question('Add Git hooks (husky)? (y/N)')).toLowerCase() === 'y';
-        const useESLint = (await question('Add ESLint configuration? (y/N)')).toLowerCase() === 'y';
-        const usePrettier = (await question('Add Prettier configuration? (y/N)')).toLowerCase() === 'y';
-        const useJest = (await question('Add Jest testing framework? (y/N)')).toLowerCase() === 'y';
+        const dockerAnswer = await question('Add Docker support? (y/N)');
+        const useDocker = dockerAnswer.toLowerCase() === 'y';
+
+        const gitHooksAnswer = await question('Add Git hooks (husky)? (y/N)');
+        const useGitHooks = gitHooksAnswer.toLowerCase() === 'y';
+
+        const eslintAnswer = await question('Add ESLint configuration? (y/N)');
+        const useESLint = eslintAnswer.toLowerCase() === 'y';
+
+        const prettierAnswer = await question('Add Prettier configuration? (y/N)');
+        const usePrettier = prettierAnswer.toLowerCase() === 'y';
+
+        const jestAnswer = await question('Add Jest testing framework? (y/N)');
+        const useJest = jestAnswer.toLowerCase() === 'y';
 
         // Determine project directory
         const currentDir = process.cwd();
@@ -172,7 +181,8 @@ async function generateProject() {
         console.log(`Jest: ${useJest ? 'Yes' : 'No'}`);
         console.log(`Location: ${projectDir}`);
 
-        const confirm = await question('\nProceed with project creation? (Y/n)').toLowerCase();
+        const confirmAnswer = await question('\nProceed with project creation? (Y/n)');
+        const confirm = confirmAnswer.toLowerCase();
         if (confirm === 'n' || confirm === 'no') {
             console.log('❌ Project creation cancelled.');
             process.exit(0);
