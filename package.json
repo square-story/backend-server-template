@@ -1,6 +1,6 @@
 {
   "name": "backend-server-template",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A production-ready Node.js/Express.js backend server template with TypeScript, MongoDB, and best practices built-in",
   "main": "generate-project.js",
   "bin": {
@@ -12,7 +12,8 @@
     "build": "tsc && tsc-alias",
     "prepublishOnly": "npm run build",
     "test": "node scripts/test-package.js",
-    "publish:package": "./scripts/publish.sh"
+    "publish:package": "./scripts/publish.sh",
+    "postinstall": "chmod +x generate-project.js"
   },
   "keywords": [
     "template",
@@ -51,7 +52,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.5",
     "morgan": "^1.10.1",
-    "zod": "^4.0.10"
+    "zod": "^4.0.10",
+    "fs-extra": "^11.2.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -60,7 +62,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.1.0",
-    "fs-extra": "^11.2.0",
     "@types/fs-extra": "^11.0.4",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",

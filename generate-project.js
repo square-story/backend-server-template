@@ -88,6 +88,13 @@ async function generateProject() {
         console.log('📋 Copying template files...');
         const templateDir = path.resolve(__dirname);
 
+        // Ensure we're not copying to a subdirectory of the template
+        if (projectDir.startsWith(templateDir + path.sep)) {
+            console.log('❌ Error: Cannot create project inside the template directory');
+            console.log('💡 Please run the command from a different directory');
+            process.exit(1);
+        }
+
         await fs.copy(templateDir, projectDir, {
             filter: (src) => {
                 // Exclude template-specific files and directories
