@@ -266,12 +266,12 @@ async function generateProject() {
         packageJson.version = '1.0.0';
         packageJson.repository = {
             type: 'git',
-            url: `https://github.com/yourusername/${projectName}.git`
+            url: `https://github.com/square-story/${projectName}.git`
         };
         packageJson.bugs = {
-            url: `https://github.com/yourusername/${projectName}/issues`
+            url: `https://github.com/square-story/${projectName}/issues`
         };
-        packageJson.homepage = `https://github.com/yourusername/${projectName}#readme`;
+        packageJson.homepage = `https://github.com/square-story/${projectName}#readme`;
 
         // Remove template-specific configurations
         delete packageJson.bin;
