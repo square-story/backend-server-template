@@ -1,16 +1,47 @@
 {
-  "name": "server",
+  "name": "backend-server-template",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "A production-ready Node.js/Express.js backend server template with TypeScript, MongoDB, and best practices built-in",
+  "main": "generate-project.js",
+  "bin": {
+    "create-backend-server": "./generate-project.js"
+  },
   "scripts": {
     "dev": "NODE_ENV=development nodemon",
     "start": "NODE_ENV=production node dist",
-    "build": "tsc && tsc-alias"
+    "build": "tsc && tsc-alias",
+    "prepublishOnly": "npm run build",
+    "test": "node scripts/test-package.js",
+    "publish:package": "./scripts/publish.sh"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "template",
+    "backend",
+    "server",
+    "express",
+    "typescript",
+    "mongodb",
+    "mongoose",
+    "nodejs",
+    "api",
+    "boilerplate",
+    "starter",
+    "generator"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/backend-server-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/backend-server-template/issues"
+  },
+  "homepage": "https://github.com/yourusername/backend-server-template#readme",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -26,15 +57,31 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/fs-extra": "^11.0.4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.1.0",
-    "fs-extra": "^11.3.1",
+    "fs-extra": "^11.2.0",
+    "@types/fs-extra": "^11.0.4",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3"
+  },
+  "files": [
+    "src/**/*",
+    "tsconfig.json",
+    "nodemon.json",
+    "README.md",
+    "TEMPLATE_README.md",
+    "template-setup.md",
+    "TEMPLATE_USAGE.md",
+    "env.template",
+    "setup-template.sh",
+    "generate-project.js"
+  ],
+  "preferGlobal": true,
+  "publishConfig": {
+    "access": "public"
   }
 }

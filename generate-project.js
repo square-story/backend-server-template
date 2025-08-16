@@ -14,6 +14,30 @@ function question(query) {
     return new Promise(resolve => rl.question(query, resolve));
 }
 
+function validatePackageName(name) {
+    // npm package name validation rules
+    const validNameRegex = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;
+    if (!validNameRegex.test(name)) {
+        return 'Package name must be lowercase, can contain hyphens, and cannot start/end with hyphen';
+    }
+    if (name.length > 214) {
+        return 'Package name cannot be longer than 214 characters';
+    }
+    if (name.startsWith('.') || name.startsWith('_')) {
+        return 'Package name cannot start with . or _';
+    }
+    return null;
+}
+
+function validateDirectoryName(name) {
+    // Directory name validation
+    const invalidChars = /[<>:"/\\|?*]/;
+    if (invalidChars.test(name)) {
+        return 'Directory name contains invalid characters';
+    }
+    return null;
+}
+
 async function generateProject() {
     console.log('🚀 Backend Server Template Project Generator');
     console.log('==========================================\n');
@@ -31,11 +55,29 @@ async function generateProject() {
             process.exit(1);
         }
 
-        const projectDir = path.resolve('../' + projectName);
+        // Validate package name
+        const packageNameError = validatePackageName(projectName);
+        if (packageNameError) {
+            console.log(`❌ Invalid package name: ${packageNameError}`);
+            console.log('💡 Try using only lowercase letters, numbers, and hyphens');
+            process.exit(1);
+        }
+
+        // Validate directory name
+        const dirNameError = validateDirectoryName(projectName);
+        if (dirNameError) {
+            console.log(`❌ Invalid directory name: ${dirNameError}`);
+            process.exit(1);
+        }
+
+        // Determine project directory
+        const currentDir = process.cwd();
+        const projectDir = path.resolve(currentDir, projectName);
 
         // Check if directory exists
         if (fs.existsSync(projectDir)) {
-            console.log(`❌ Directory ${projectDir} already exists!`);
+            console.log(`❌ Directory ${projectName} already exists in the current location!`);
+            console.log('💡 Please choose a different name or remove the existing directory');
             process.exit(1);
         }
 
@@ -44,7 +86,9 @@ async function generateProject() {
 
         // Copy template files
         console.log('📋 Copying template files...');
-        await fs.copy('.', projectDir, {
+        const templateDir = path.resolve(__dirname);
+
+        await fs.copy(templateDir, projectDir, {
             filter: (src) => {
                 // Exclude template-specific files and directories
                 const excludePatterns = [
@@ -55,7 +99,9 @@ async function generateProject() {
                     'template-setup.md',
                     'setup-template.sh',
                     'env.template',
-                    'generate-project.js'
+                    'generate-project.js',
+                    'dist',
+                    '.DS_Store'
                 ];
 
                 return !excludePatterns.some(pattern =>
@@ -76,6 +122,7 @@ async function generateProject() {
         packageJson.description = projectDescription;
         packageJson.author = authorName;
         packageJson.license = license;
+        packageJson.version = '1.0.0';
 
         await fs.writeJson(packagePath, packageJson, { spaces: 2 });
 
@@ -113,16 +160,30 @@ LOG_FORMAT=combined`;
 
         // Initialize git repository
         console.log('🔧 Initializing git repository...');
-        execSync('git init', { stdio: 'inherit' });
+        try {
+            execSync('git init', { stdio: 'inherit' });
+        } catch (error) {
+            console.log('⚠️  Git initialization failed, continuing without git...');
+        }
 
         // Install dependencies
         console.log('📦 Installing dependencies...');
-        execSync('npm install', { stdio: 'inherit' });
+        try {
+            execSync('npm install', { stdio: 'inherit' });
+        } catch (error) {
+            console.log('⚠️  Dependencies installation failed, you can run "npm install" manually later');
+        }
 
-        // Create initial commit
-        console.log('💾 Creating initial commit...');
-        execSync('git add .', { stdio: 'inherit' });
-        execSync('git commit -m "Initial commit: Setup from backend server template"', { stdio: 'inherit' });
+        // Create initial commit if git is available
+        if (fs.existsSync(path.join(projectDir, '.git'))) {
+            try {
+                console.log('💾 Creating initial commit...');
+                execSync('git add .', { stdio: 'inherit' });
+                execSync('git commit -m "Initial commit: Setup from backend server template"', { stdio: 'inherit' });
+            } catch (error) {
+                console.log('⚠️  Git commit failed, you can commit manually later');
+            }
+        }
 
         console.log('\n✅ Project setup complete!');
         console.log('==============================');
