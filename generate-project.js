@@ -337,9 +337,41 @@ async function generateProject() {
             "prepare": useGitHooks ? "husky install" : "echo \"No git hooks configured\""
         };
 
+        // Ensure essential dependencies are present
+        packageJson.dependencies = packageJson.dependencies || {};
+        packageJson.devDependencies = packageJson.devDependencies || {};
+
+        // Add missing essential dependencies if not present
+        const essentialDeps = {
+            "express": "^5.1.0",
+            "cors": "^2.8.5",
+            "helmet": "^8.1.0",
+            "morgan": "^1.10.1",
+            "dotenv": "^17.2.1"
+        };
+
+        for (const [dep, version] of Object.entries(essentialDeps)) {
+            if (!packageJson.dependencies[dep]) {
+                packageJson.dependencies[dep] = version;
+            }
+        }
+
+        // Add missing essential dev dependencies
+        const essentialDevDeps = {
+            "@types/node": "^24.1.0",
+            "typescript": "^5.8.3",
+            "nodemon": "^3.1.10",
+            "ts-node": "^10.9.2"
+        };
+
+        for (const [dep, version] of Object.entries(essentialDevDeps)) {
+            if (!packageJson.devDependencies[dep]) {
+                packageJson.devDependencies[dep] = version;
+            }
+        }
+
         // Add conditional dependencies
         if (useJest) {
-            packageJson.devDependencies = packageJson.devDependencies || {};
             packageJson.devDependencies.jest = "^29.7.0";
             packageJson.devDependencies["@types/jest"] = "^29.5.8";
         }
@@ -742,14 +774,66 @@ volumes:
         // Install dependencies
         console.log('\n📦 Installing dependencies...');
         const installSpinner = showSpinner('Installing packages...');
+
         try {
-            execSync('npm install', { stdio: 'pipe' });
-            stopSpinner();
+            // Set a timeout for npm install
+            const installTimeout = setTimeout(() => {
+                console.log('\r⏰ npm install is taking longer than expected...');
+            }, 30000); // 30 seconds warning
+
+            // Try to install dependencies with better error handling
+            execSync('npm install --no-audit --no-fund --silent', {
+                stdio: 'pipe',
+                cwd: projectDir,
+                timeout: 120000 // 2 minutes timeout
+            });
+
+            clearTimeout(installTimeout);
+            installSpinner();
             console.log('\r✅ Dependencies installed successfully');
+
         } catch (error) {
-            stopSpinner();
-            console.log('\r❌ Failed to install dependencies');
-            console.log('💡 You can run "npm install" manually in the project directory');
+            installSpinner();
+            console.log('\r⚠️  npm install encountered issues');
+
+            if (error.code === 'ETIMEDOUT') {
+                console.log('💡 Installation timed out. This might be due to slow internet or large packages.');
+            } else if (error.code === 'ENOENT') {
+                console.log('💡 npm command not found. Please ensure Node.js and npm are installed.');
+            } else {
+                console.log(`💡 Installation error: ${error.message}`);
+            }
+
+            console.log('\n🔄 Trying alternative installation methods...');
+
+            try {
+                // Try with yarn if available
+                console.log('📦 Attempting to install with yarn...');
+                execSync('yarn install --silent', {
+                    stdio: 'pipe',
+                    cwd: projectDir,
+                    timeout: 120000
+                });
+                console.log('✅ Dependencies installed successfully with yarn');
+            } catch (yarnError) {
+                try {
+                    // Try with pnpm if available
+                    console.log('📦 Attempting to install with pnpm...');
+                    execSync('pnpm install --silent', {
+                        stdio: 'pipe',
+                        cwd: projectDir,
+                        timeout: 120000
+                    });
+                    console.log('✅ Dependencies installed successfully with pnpm');
+                } catch (pnpmError) {
+                    console.log('❌ All package managers failed');
+                    console.log('💡 You can install dependencies manually:');
+                    console.log(`   cd ${projectName}`);
+                    console.log('   npm install');
+                    console.log('   # or yarn install');
+                    console.log('   # or pnpm install');
+                }
+            }
         }
 
         // Success message
