@@ -198,62 +198,101 @@ async function generateProject() {
 
         const stopSpinner = showSpinner('Copying files...');
 
-        await fs.copy(templateDir, projectDir, {
-            filter: (src) => {
-                // Exclude template-specific files and directories
-                const excludePatterns = [
-                    '.git',
-                    'node_modules',
-                    'dist',
-                    'coverage',
-                    '.nyc_output',
-                    '*.log',
-                    'npm-debug.log*',
-                    'yarn-debug.log*',
-                    'yarn-error.log*',
-                    '.DS_Store',
-                    'Thumbs.db',
-                    '.vscode',
-                    '.idea',
-                    '*.swp',
-                    '*.swo',
-                    '*~',
-                    '.env',
-                    '.env.local',
-                    '.env.production',
-                    '.env.development',
-                    'package-lock.json',
-                    'yarn.lock',
-                    'pnpm-lock.yaml',
-                    '*.tgz',
-                    'tmp',
-                    'temp',
-                    '.tmp'
-                ];
+        try {
+            await fs.copy(templateDir, projectDir, {
+                filter: (src) => {
+                    // Exclude template-specific files and directories
+                    const excludePatterns = [
+                        '.git',
+                        'node_modules',
+                        'dist',
+                        'coverage',
+                        '.nyc_output',
+                        '*.log',
+                        'npm-debug.log*',
+                        'yarn-debug.log*',
+                        'yarn-error.log*',
+                        '.DS_Store',
+                        'Thumbs.db',
+                        '.vscode',
+                        '.idea',
+                        '*.swp',
+                        '*.swo',
+                        '*~',
+                        '.env',
+                        '.env.local',
+                        '.env.production',
+                        '.env.development',
+                        'package-lock.json',
+                        'yarn.lock',
+                        'pnpm-lock.yaml',
+                        '*.tgz',
+                        'tmp',
+                        'temp',
+                        '.tmp'
+                    ];
 
-                const srcName = path.basename(src);
-                const srcDir = path.dirname(src);
+                    const srcName = path.basename(src);
+                    const srcDir = path.dirname(src);
 
-                // Always exclude these patterns
-                for (const pattern of excludePatterns) {
-                    if (srcName === pattern || srcName.startsWith(pattern) || srcName.endsWith(pattern)) {
+                    // Always exclude these patterns
+                    for (const pattern of excludePatterns) {
+                        if (srcName === pattern || srcName.startsWith(pattern) || srcName.endsWith(pattern)) {
+                            return false;
+                        }
+                    }
+
+                    // Exclude template-specific documentation
+                    if (srcName.includes('TEMPLATE_') || srcName.includes('NPM_PACKAGE_')) {
                         return false;
                     }
-                }
 
-                // Exclude template-specific documentation
-                if (srcName.includes('TEMPLATE_') || srcName.includes('NPM_PACKAGE_')) {
-                    return false;
-                }
+                    // Exclude scripts directory (will be customized)
+                    if (srcDir.endsWith('scripts')) {
+                        return false;
+                    }
 
-                // Exclude scripts directory (will be customized)
-                if (srcDir.endsWith('scripts')) {
-                    return false;
+                    return true;
                 }
+            });
+        } catch (error) {
+            stopSpinner();
+            console.log(`\r❌ Error copying files: ${error.message}`);
+            throw error;
+        }
 
-                return true;
+        // Clean up template-specific files after copying
+        console.log('🧹 Cleaning up template files...');
+        const filesToRemove = [
+            'generate-project.js',
+            'setup-template.sh',
+            'template-setup.md',
+            'TEMPLATE_README.md',
+            'TEMPLATE_USAGE.md',
+            'NPM_PACKAGE_README.md',
+            'NPM_PACKAGE_SUMMARY.md',
+            'DEPLOYMENT_GUIDE.md',
+            'QUICK_FIX.md',
+            'IMPROVEMENTS_SUMMARY.md',
+            'scripts',
+            '.npmignore',
+            'nodemon.json'
+        ];
+
+        for (const file of filesToRemove) {
+            const filePath = path.join(projectDir, file);
+            try {
+                if (fs.existsSync(filePath)) {
+                    if (fs.lstatSync(filePath).isDirectory()) {
+                        await fs.remove(filePath);
+                    } else {
+                        await fs.unlink(filePath);
+                    }
+                }
+            } catch (error) {
+                console.log(`   ⚠️  Could not remove ${file}: ${error.message}`);
             }
-        });
+        }
 
         stopSpinner();
         console.log('\r✅ Files copied successfully');
@@ -746,7 +785,16 @@ volumes:
 
 // Run the generator
 if (require.main === module) {
-    generateProject();
+    // Add timeout to prevent hanging
+    const timeout = setTimeout(() => {
+        console.error('\n❌ Project generation timed out after 5 minutes');
+        console.error('💡 This might be due to file system issues or large file operations');
+        process.exit(1);
+    }, 5 * 60 * 1000); // 5 minutes timeout
+
+    generateProject().finally(() => {
+        clearTimeout(timeout);
+    });
 }
 
 module.exports = { generateProject };

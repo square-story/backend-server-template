@@ -1,6 +1,6 @@
 {
   "name": "backend-server-template",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A production-ready Node.js/Express.js backend server template with TypeScript, MongoDB, and best practices built-in",
   "main": "generate-project.js",
   "bin": {
