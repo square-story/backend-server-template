@@ -324,8 +324,7 @@ async function generateProject() {
 
         // Update scripts
         packageJson.scripts = {
-            "dev": "NODE_ENV=development nodemon --exec ts-node src/index.ts",
-            "dev:simple": "NODE_ENV=development ts-node src/index.ts",
+            "dev": "NODE_ENV=development nodemon",
             "start": "NODE_ENV=production node dist/index.js",
             "build": "tsc && tsc-alias",
             "test": useJest ? "jest" : "echo \"No tests specified\"",
@@ -412,8 +411,8 @@ async function generateProject() {
         const nodemonConfig = {
             "watch": ["src"],
             "ext": "ts,js,json",
-            "ignore": ["src/**/*.spec.ts", "src/**/*.test.ts"],
-            "exec": "ts-node src/index.ts"
+            "ignore": ["src/**/*.spec.ts", "src/**/*.test.ts", "node_modules", "dist"],
+            "exec": "ts-node -r tsconfig-paths/register src/index.ts"
         };
         await fs.writeJson(path.join(projectDir, 'nodemon.json'), nodemonConfig, { spaces: 2 });
 
