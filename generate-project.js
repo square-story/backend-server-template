@@ -275,8 +275,7 @@ async function generateProject() {
             'QUICK_FIX.md',
             'IMPROVEMENTS_SUMMARY.md',
             'scripts',
-            '.npmignore',
-            'nodemon.json'
+            '.npmignore'
         ];
 
         for (const file of filesToRemove) {
@@ -325,8 +324,9 @@ async function generateProject() {
 
         // Update scripts
         packageJson.scripts = {
-            "dev": "NODE_ENV=development nodemon",
-            "start": "NODE_ENV=production node dist",
+            "dev": "NODE_ENV=development nodemon --exec ts-node src/index.ts",
+            "dev:simple": "NODE_ENV=development ts-node src/index.ts",
+            "start": "NODE_ENV=production node dist/index.js",
             "build": "tsc && tsc-alias",
             "test": useJest ? "jest" : "echo \"No tests specified\"",
             "test:watch": useJest ? "jest --watch" : "echo \"No tests specified\"",
@@ -406,6 +406,16 @@ async function generateProject() {
         // Create .env file
         const envPath = path.join(projectDir, '.env');
         await fs.copy(envTemplatePath, envPath);
+
+        // Create nodemon configuration
+        console.log('⚙️  Creating nodemon configuration...');
+        const nodemonConfig = {
+            "watch": ["src"],
+            "ext": "ts,js,json",
+            "ignore": ["src/**/*.spec.ts", "src/**/*.test.ts"],
+            "exec": "ts-node src/index.ts"
+        };
+        await fs.writeJson(path.join(projectDir, 'nodemon.json'), nodemonConfig, { spaces: 2 });
 
         // Create .gitignore
         console.log('📝 Creating .gitignore...');
