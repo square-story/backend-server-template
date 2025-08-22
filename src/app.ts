@@ -33,6 +33,10 @@ if (NODE_ENV === 'development') {
     app.use(requestLogger);
 }
 
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {

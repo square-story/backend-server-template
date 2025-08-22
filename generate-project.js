@@ -654,7 +654,7 @@ ${authorName}${authorEmail ? ` - ${authorEmail}` : ''}
                 },
                 "extends": [
                     "eslint:recommended",
-                    "@typescript-eslint/recommended"
+                    "plugin:@typescript-eslint/recommended"
                 ],
                 "parser": "@typescript-eslint/parser",
                 "parserOptions": {
