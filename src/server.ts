@@ -1,9 +1,16 @@
 import app from "./app";
-import { PORT, NODE_ENV } from "./config/env.config";
+import { PORT, NODE_ENV, validateEnv } from "./config/env.config";
 import { initialConfig } from "./config/initial.config";
 import { connection as mongooseConnection } from "mongoose";
 
 const server = app.listen(PORT, async () => {
+    // Validate environment before proceeding
+    try {
+        validateEnv();
+    } catch (e) {
+        console.error(String(e));
+        process.exit(1);
+    }
     await initialConfig();
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`🌍 Environment: ${NODE_ENV}`);
