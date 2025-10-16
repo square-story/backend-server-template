@@ -1,4 +1,5 @@
 import express from "express";
+import { connection as mongooseConnection } from "mongoose";
 import cors from "cors";
 import helmet from "helmet";
 import { ALLOWED_ORIGINS, NODE_ENV } from "./config/env.config";
@@ -45,6 +46,28 @@ app.get('/health', (req, res) => {
         timestamp: new Date().toISOString(),
         environment: NODE_ENV
     });
+});
+
+// Readiness check endpoint
+app.get('/ready', (req, res) => {
+    // 1 = connected, 2 = connecting, 0 = disconnected, 3 = disconnecting
+    const dbState = mongooseConnection.readyState;
+    const isReady = dbState === 1;
+
+    const payload = {
+        ready: isReady,
+        services: {
+            database: dbState === 1 ? 'connected' : dbState === 2 ? 'connecting' : dbState === 0 ? 'disconnected' : 'disconnecting'
+        },
+        timestamp: new Date().toISOString(),
+        environment: NODE_ENV
+    };
+
+    if (isReady) {
+        return res.status(200).json(payload);
+    }
+
+    return res.status(503).json(payload);
 });
 
 app.use('/api', routes);
